@@ -12,12 +12,17 @@ Install with pip:
 
 Add the listener to your robot execution, via command line arguments.
 When your tests do fail and you have tagged them with `test:retry(2)`, it will retry the test 2 times. 
+Retry can be also set globally as a parameter to the listener.
 
 ### Attaching Listener
 
 Example:
 
     robot --listener RetryFailed <your robot suite>
+
+    robot --listener RetryFailed:1 <robot suite>
+
+Second one will by default retry once every failing test.
 
 ### Tagging Tests
 

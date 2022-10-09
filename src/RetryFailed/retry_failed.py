@@ -28,10 +28,11 @@ class RetryFailed:
 
     ROBOT_LISTENER_API_VERSION = 3
 
-    def __init__(self):
+    def __init__(self, max_retries=0):
         self.retried_tests = []
         self.retries = 0
-        self.max_retries = 0
+        self._max_retries_by_default = int(max_retries)
+        self.max_retries = max_retries
 
     def start_test(self, test, result):
         for tag in test.tags:
@@ -39,7 +40,7 @@ class RetryFailed:
             if retry_match:
                 self.max_retries = int(retry_match.group(1))
                 return
-        self.max_retries = 0
+        self.max_retries = self._max_retries_by_default
         return
 
     def end_test(self, test, result):

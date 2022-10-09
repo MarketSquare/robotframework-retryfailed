@@ -27,3 +27,5 @@ Example:
     Test Case
         [Tags]    test:retry(2)
         Log    This test will be retried 2 times if it fails
+
+Tagging tasks by `task:retry(3)` should also work.

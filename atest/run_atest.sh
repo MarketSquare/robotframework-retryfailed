@@ -1,0 +1,1 @@
+robot -d results --listener RetryFailed 01_SimpleTestSuite.robot

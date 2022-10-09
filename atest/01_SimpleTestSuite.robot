@@ -1,3 +1,7 @@
+*** Settings ***
+# Library     RetryFailed    log_level=TRACE
+
+
 *** Variables ***
 ${retry_1}    ${0}
 ${retry_2}    ${0}

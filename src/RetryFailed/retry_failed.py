@@ -15,8 +15,9 @@ limitations under the License."""
 import re
 
 from robot.api import ExecutionResult, ResultVisitor, logger
+from robot.api.deco import library
 from robot.libraries.BuiltIn import BuiltIn
-from robot.output import Message
+from robot.utils.robottypes import is_truthy
 
 duplicate_test_pattern = re.compile(
     r"Multiple .*? with name '(?P<test>.*?)' executed in.*? suite '(?P<suite>.*?)'."
@@ -24,19 +25,28 @@ duplicate_test_pattern = re.compile(
 linebreak = "\n"
 
 
+@library(scope="GLOBAL")
 class RetryFailed:
 
     ROBOT_LISTENER_API_VERSION = 3
 
-    def __init__(self, global_retries=0):
+    def __init__(self, global_retries=0, keep_retried_tests=False, log_level=None):
+        self.ROBOT_LIBRARY_LISTENER = self
         self.retried_tests = []
         self.retries = 0
         self._max_retries_by_default = int(global_retries)
         self.max_retries = global_retries
+        self.keep_retried_tests = is_truthy(keep_retried_tests)
+        self.log_level = log_level
+        self._original_log_level = None
 
     def start_test(self, test, result):
+        if self.retries:
+            BuiltIn().set_test_variable("${RETRYFAILED_RETRY_INDEX}", self.retries)
+            if self.log_level is not None:
+                self._original_log_level = BuiltIn()._context.output.set_log_level(self.log_level)
         for tag in test.tags:
-            retry_match = re.match(r"(?:test|task)\:retry\((\d+)\)", tag)
+            retry_match = re.match(r"(?:test|task):retry\((\d+)\)", tag)
             if retry_match:
                 self.max_retries = int(retry_match.group(1))
                 return
@@ -44,7 +54,10 @@ class RetryFailed:
         return
 
     def end_test(self, test, result):
+        if self.retries and self._original_log_level is not None:
+            BuiltIn()._context.output.set_log_level(self._original_log_level)
         if not self.max_retries:
+            self.retries = 0
             return
         if result.status == "FAIL":
             if self.retries < self.max_retries:
@@ -86,16 +99,19 @@ class RetryFailed:
 
     def output_file(self, original_output_xml):
         result = ExecutionResult(original_output_xml)
-        result.visit(RetryMerger(self.retried_tests))
+        result.visit(RetryMerger(self.retried_tests, self.keep_retried_tests))
         result.save()
 
 
 class RetryMerger(ResultVisitor):
-    def __init__(self, retried_tests):
+    def __init__(self, retried_tests, keep_retried_tests=False):
         self.retried_tests = retried_tests
+        self.keep_retried_tests = keep_retried_tests
         self.test_ids = {}
 
     def start_suite(self, suite):
+        if self.keep_retried_tests:
+            return
         test_dict = {}
         for test in suite.tests:
             test_dict[test.name] = test
@@ -112,7 +128,7 @@ class RetryMerger(ResultVisitor):
         for message in errors.messages:
             if message.level == "WARN":
                 pattern = re.compile(
-                    r"(?P<retries>\d+)/(?P<max_retries>\d+) retry of test '(?P<test>.+)':"
+                    r"Retry (?P<retries>\d+)/(?P<max_retries>\d+) of test '(?P<test>.+)':"
                 )
                 match = pattern.match(message.message)
                 if match:

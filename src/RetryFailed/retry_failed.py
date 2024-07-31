@@ -44,13 +44,18 @@ class RetryFailed:
         if self.retries:
             BuiltIn().set_test_variable("${RETRYFAILED_RETRY_INDEX}", self.retries)
             if self.log_level is not None:
-                self._original_log_level = BuiltIn()._context.output.set_log_level(self.log_level)
-        for tag in test.tags:
-            retry_match = re.match(r"(?:test|task):retry\((\d+)\)", tag)
-            if retry_match:
-                self.max_retries = int(retry_match.group(1))
-                return
-        self.max_retries = self._max_retries_by_default
+                self._original_log_level = BuiltIn()._context.output.set_log_level(self.log_level)  
+
+        skip_tags = {"test:skipretry", "task:skipretry"}
+        if not skip_tags.intersection(test.tags):
+            for tag in test.tags:
+                retry_match = re.match(r"(?:test|task):retry\((\d+)\)", tag)
+                if retry_match:
+                    self.max_retries = int(retry_match.group(1))
+                    return
+            self.max_retries = self._max_retries_by_default
+        else:
+            self.max_retries = 0
         return
 
     def end_test(self, test, result):

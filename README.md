@@ -34,3 +34,14 @@ Example:
         Log    This test will be retried 2 times if it fails
 
 Tagging tasks by `task:retry(3)` should also work.
+
+### Skip retry for some tests
+
+Skip retry for some tests in a testsuite 
+
+Example:
+
+    *** Test Cases ***
+    Test Case
+        [Tags]    test:skipretry
+        Log    This test will be skipped for retry if it fails

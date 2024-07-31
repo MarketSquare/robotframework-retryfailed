@@ -8,4 +8,4 @@ My Simple Test
 
 Simple test to skip retry
     [Tags]    test:skipretry
-    Fail     failing this test but it should not retry
+    Fail     failing this test but test should not retry

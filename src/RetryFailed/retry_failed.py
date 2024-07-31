@@ -53,7 +53,9 @@ class RetryFailed:
                 if retry_match:
                     self.max_retries = int(retry_match.group(1))
                     return
-        self.max_retries = self._max_retries_by_default
+            self.max_retries = self._max_retries_by_default
+        else:
+            self.max_retries = 0
         return
 
     def end_test(self, test, result):

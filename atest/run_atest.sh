@@ -1,1 +1,1 @@
-robot -d results --listener RetryFailed:10:True:TRACE 01_SimpleTestSuite.robot
+robot -d results --listener RetryFailed --loglevel TRACE .

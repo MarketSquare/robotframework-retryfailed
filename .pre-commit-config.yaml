@@ -1,0 +1,30 @@
+repos:
+  # mypy linter for Python files
+  - repo: local
+    hooks:
+      - id: mypy
+        name: mypy
+        description: 'Run mypy for static type checking'
+        entry: mypy
+        language: python
+        types_or: [python, pyi]
+        require_serial: true
+
+  # Ruff linter for Python files
+  - repo: local
+    hooks:
+      - id: ruff-format
+        name: ruff-format
+        description: "Run 'ruff format' for extremely fast Python formatting"
+        entry: ruff format --force-exclude
+        language: python
+        types_or: [python, pyi, jupyter]
+        require_serial: true
+
+      - id: ruff
+        name: ruff
+        description: "Run 'ruff' for extremely fast Python linting"
+        entry: ruff check --force-exclude
+        language: python
+        types_or: [python, pyi, jupyter]
+        require_serial: true

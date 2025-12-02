@@ -1,3 +1,0 @@
-robotframework>=4.1.0
-setuptools
-twine

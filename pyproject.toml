@@ -1,0 +1,112 @@
+[build-system]
+requires = ["flit_core>=3.11,<4"]
+build-backend = "flit_core.buildapi"
+
+[project]
+name = "robotframework-retryfailed"
+description = "Robot Framework listener that automatically retries tagged tests, tasks, or keywords."
+readme = "README.md"
+license = { file = "LICENSE" }
+requires-python = ">=3.10"
+authors = [
+  { name = "René Rohner", email = "snooz@posteo.de" },
+]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "License :: OSI Approved :: Apache Software License",
+  "Operating System :: OS Independent",
+  "Topic :: Software Development :: Testing",
+  "Topic :: Software Development :: Testing :: Acceptance",
+  "Framework :: Robot Framework",
+]
+dependencies = [
+  "robotframework>=7.0,<8.0",
+]
+dynamic = ["version"]
+
+[project.optional-dependencies]
+dev = [
+  "check-manifest>=0.50",
+  "flit>=3.12,<4",
+  "mypy>=1.15.0",
+  "pre-commit>=4.1.0",
+  "ruff>=0.9.6",
+  "twine>=5.1.0",
+  "robotframework-robocop>=6.7.0",
+]
+test = [
+  "robotframework-robocop>=6.7.0",
+]
+
+[project.urls]
+Source = "https://github.com/MarketSquare/robotframework-retryfailed"
+Issues = "https://github.com/MarketSquare/robotframework-retryfailed/issues"
+
+[tool.flit.module]
+name = "RetryFailed"
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+src = ["src"]
+exclude = [
+  ".venv",
+  ".git",
+  "__pycache__",
+  "build",
+  "dist",
+  "bootstrap.py",
+  "atest/",
+]
+
+[tool.ruff.lint]
+select = [
+  "E",
+  "F",
+  "W",
+  "C90",
+  "I",
+  "N",
+  "B",
+  "PYI",
+  "PL",
+  "PTH",
+  "UP",
+  "A",
+  "C4",
+  "DTZ",
+  "ISC",
+  "ICN",
+  "INP",
+  "PIE",
+  "T20",
+  "PYI",
+  "PT",
+  "RSE",
+  "RET",
+  "SIM",
+  "RUF"
+]
+ignore = [
+  "N999",  # Robot library names stay CamelCase
+]
+unfixable = []
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+
+[tool.mypy]
+python_version = "3.10"
+strict = true
+show_error_codes = true
+warn_return_any = true
+warn_unused_configs = true
+warn_unreachable = true
+files = ["src"]
+exclude = "/(\\.venv|\\.git|__pycache__|build|dist|atest)/"
+disable_error_code = ["import-untyped"]
